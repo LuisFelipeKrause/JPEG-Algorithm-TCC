@@ -1,6 +1,8 @@
-# 📦 Compressão de Imagens com DCT + Huffman
+## Luís Felipe Krause de Castro
 
-Este projeto implementa um pipeline de compressão de imagens utilizando a **Transformada Discreta do Cosseno (DCT)**, **quantização escalonada** e **codificação de Huffman**, simulando conceitos utilizados no padrão JPEG.
+# 📦 Algoritmo JPEG 
+
+Este projeto implementa uma versão simplificada do algoritmo JPEG para testes preliminares e obtenção de métricas de comparação.
 
 ---
 
