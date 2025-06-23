@@ -99,21 +99,6 @@ def build_huffman_tree(freq):
 
     return heap[0][2]
 
-
-# --- Carregar imagem (em RGB) ---
-img = cv2.imread(imagens['mandril'])
-img = cv2.resize(img, (512, 512))
-
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-h, w, c = img.shape
-
-# --- Para salvar e medir tamanho RAW em RGB ---
-bmp_path = "temp_raw.bmp"
-cv2.imwrite(bmp_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-tamanho_original_raw = os.path.getsize(bmp_path)
-os.remove(bmp_path)
-
-# --- Processamento por canal ---
 def processar_canal(canal, Q):
     blocos = dividir_blocos(canal)
     blocos_dct = []
@@ -135,69 +120,84 @@ def processar_canal(canal, Q):
     img_rec = juntar_blocos(blocos_rec, canal.shape[0], canal.shape[1])
     return img_rec, blocos_dct, zeros_total, coef_total
 
-# --- Avaliar diferentes tabelas ---
-resultados = {}
-imgs_reconstruidas = {}
 
-for nome, Q in tabelas_quantizacao.items():
-    canais_rec = []
-    coef_all = []
-    zeros_total = 0
-    coef_total = 0
+# --- Executar para todas as imagens --- #
+for nome_img, caminho in imagens.items():
+    print(f"\n🔍 Processando imagem: {nome_img}")
 
-    for i in range(3):  # R, G, B
-        canal = img[:, :, i]
-        rec, blocos_dct, z, c = processar_canal(canal, Q)
-        canais_rec.append(rec)
-        coef_all.extend([b.flatten() for b in blocos_dct])
-        zeros_total += z
-        coef_total += c
+    img = cv2.imread(caminho)
+    img = cv2.resize(img, (512, 512))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    h, w, c = img.shape
 
-    img_final = np.stack(canais_rec, axis=2).astype(np.uint8)
-    imgs_reconstruidas[nome] = img_final
+    bmp_path = "temp_raw.bmp"
+    cv2.imwrite(bmp_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    tamanho_original_raw = os.path.getsize(bmp_path)
+    os.remove(bmp_path)
 
-    # --- Métricas ---
-    psnr = peak_signal_noise_ratio(img, img_final, data_range=255)
-    ssim = structural_similarity(img, img_final, channel_axis=2)
-    perc_zeros = (zeros_total / coef_total) * 100
+    resultados = {}
+    imgs_reconstruidas = {}
 
-    # --- Huffman ---
-    coef_flat = np.concatenate(coef_all)
-    freq = Counter(coef_flat)
-    arvore = build_huffman_tree(freq)
-    huff_code = {}
-    arvore.walk(huff_code, "")
-    bitstream = "".join(huff_code[val] for val in coef_flat)
-    tamanho_bits = len(bitstream)
-    tamanho_bytes = tamanho_bits / 8
-    taxa_huffman = tamanho_original_raw / tamanho_bytes
+    for nome_tab, Q in tabelas_quantizacao.items():
+        canais_rec = []
+        coef_all = []
+        zeros_total = 0
+        coef_total = 0
 
-    resultados[nome] = {
-        'Tabela': nome,
-        ' PSNR (dB)': round(psnr, 2),
-        '   SSIM': round(ssim, 4),
-        '  % Coef. Zerados': round(perc_zeros, 2),
-        ' Tamanho RAW (bytes)': tamanho_original_raw,
-        ' Comprimido (bytes)': round(tamanho_bytes),
-        ' Compressão Huffman (x)': round(taxa_huffman, 2)
-    }
+        for i in range(3):  # R, G, B
+            canal = img[:, :, i]
+            rec, blocos_dct, z, c = processar_canal(canal, Q)
+            canais_rec.append(rec)
+            coef_all.extend([b.flatten() for b in blocos_dct])
+            zeros_total += z
+            coef_total += c
 
-# --- Tabela final ---
-df = pd.DataFrame(resultados.values())
-print(df.to_string(index=False))
+        img_final = np.stack(canais_rec, axis=2).astype(np.uint8)
+        imgs_reconstruidas[nome_tab] = img_final
 
-# --- Plotar resultados ---
-plt.figure(figsize=(16, 5))
-plt.subplot(1, 4, 1)
-plt.title("Original")
-plt.imshow(img)
-plt.axis("off")
+        # --- Métricas ---
+        psnr = peak_signal_noise_ratio(img, img_final, data_range=255)
+        ssim = structural_similarity(img, img_final, channel_axis=2)
+        perc_zeros = (zeros_total / coef_total) * 100
 
-for i, nome in enumerate(['padrão', 'moderado', 'agressivo'], start=2):
-    plt.subplot(1, 4, i)
-    plt.title(f"Reconstruída\n{nome}")
-    plt.imshow(imgs_reconstruidas[nome])
-    plt.axis("off")
+        # --- Huffman ---
+        coef_flat = np.concatenate(coef_all)
+        freq = Counter(coef_flat)
+        arvore = build_huffman_tree(freq)
+        huff_code = {}
+        arvore.walk(huff_code, "")
+        bitstream = "".join(huff_code[val] for val in coef_flat)
+        tamanho_bits = len(bitstream)
+        tamanho_bytes = tamanho_bits / 8
+        taxa_huffman = tamanho_original_raw / tamanho_bytes
 
-plt.tight_layout()
-plt.show()
+        resultados[nome_tab] = {
+            'Tabela': nome_tab,
+            ' PSNR (dB)': round(psnr, 2),
+            '   SSIM': round(ssim, 4),
+            '  % Coef. Zerados': round(perc_zeros, 2),
+            ' Tamanho RAW (bytes)': tamanho_original_raw,
+            ' Comprimido (bytes)': round(tamanho_bytes),
+            ' Compressão Huffman (x)': round(taxa_huffman, 2)
+        }
+
+    # --- Tabela final ---
+    df = pd.DataFrame(resultados.values())
+    print(df.to_string(index=False))
+
+    # --- Plotar imagens 2x2 ---
+    fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+    axs = axs.flatten()
+    axs[0].imshow(img)
+    axs[0].set_title("Original")
+    axs[0].axis("off")
+
+    for i, nome_tab in enumerate(['padrão', 'moderado', 'agressivo'], start=1):
+        axs[i].imshow(imgs_reconstruidas[nome_tab])
+        axs[i].set_title(f"Reconstruída - {nome_tab}")
+        axs[i].axis("off")
+
+    fig.suptitle(f"Resultados - {nome_img}", fontsize=16)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.92)
+    plt.show()
