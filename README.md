@@ -42,7 +42,10 @@ As imagens utilizadas devem estar no diretório `./img/` com os seguintes nomes:
 - `caca.tiff`
 - `doces.tiff`
 - `mandril.tiff`
-
+- `textura.tiff`
+- `placa_carro.tiff`
+- `formas_aleatorias.tiff`
+- `letras_formas.tiff`
 
 Cada imagem é redimensionada para `512x512` automaticamente durante a execução.
 
