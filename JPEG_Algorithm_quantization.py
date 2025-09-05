@@ -15,18 +15,22 @@ from PIL import Image
 # ---------------------------
 
 def dct2(block):
+    """Aplica a Transformada Discreta de Cosseno 2D em um bloco 8x8."""
     return dct(dct(block.T, norm='ortho').T, norm='ortho')
 
 def idct2(block):
+    """Aplica a Transformada Inversa de Cosseno 2D em um bloco 8x8."""
     return idct(idct(block.T, norm='ortho').T, norm='ortho')
 
 def split_into_blocks(img, block_size=8):
+    """Divide a imagem em blocos quadrados de tamanho block_size x block_size."""
     h, w = img.shape
     return (img.reshape(h // block_size, block_size, -1, block_size)
               .swapaxes(1, 2)
               .reshape(-1, block_size, block_size))
 
 def merge_blocks(blocks, img_shape, block_size=8):
+    """Reconstrói a imagem a partir dos blocos processados."""
     h, w = img_shape
     return (np.array(blocks)
               .reshape(h // block_size, w // block_size, block_size, block_size)
@@ -38,6 +42,7 @@ def merge_blocks(blocks, img_shape, block_size=8):
 # ---------------------------
 
 class HuffmanNode:
+    """Representa um nó interno na árvore de Huffman."""
     def __init__(self, left=None, right=None):
         self.left = left
         self.right = right
@@ -46,12 +51,14 @@ class HuffmanNode:
         self.right.walk(code, acc + "1")
 
 class HuffmanLeaf:
+    """Representa uma folha (símbolo) na árvore de Huffman."""
     def __init__(self, symbol):
         self.symbol = symbol
     def walk(self, code, acc):
         code[self.symbol] = acc or "0"
 
 def build_huffman_tree(freq):
+    """Constrói a árvore de Huffman a partir de um dicionário de frequências."""
     heap = [(f, i, HuffmanLeaf(int(s))) for i, (s, f) in enumerate(freq.items())]
     heapq.heapify(heap)
     count = len(heap)
@@ -63,6 +70,7 @@ def build_huffman_tree(freq):
     return heap[0][2]
 
 def huffman_encoding(data):
+    """Codifica uma lista de símbolos usando Huffman e retorna o binário e o código."""
     freq = {}
     for symbol in data:
         freq[symbol] = freq.get(symbol, 0) + 1
@@ -79,6 +87,7 @@ def huffman_encoding(data):
 # ---------------------------
 
 def jpeg_compression(img, q_table):
+    """Compressão JPEG de uma matriz (Y, Cb ou Cr) usando DCT e quantização."""
     h, w = img.shape
     blocks = split_into_blocks(img)
     dct_blocks = [dct2(b.astype(np.float32)) for b in blocks]
@@ -86,6 +95,7 @@ def jpeg_compression(img, q_table):
     return quantized_blocks
 
 def jpeg_decompression(quantized_blocks, q_table, img_shape):
+    """Reconstrução de uma matriz a partir dos blocos quantizados."""
     dequantized_blocks = [b * q_table for b in quantized_blocks]
     idct_blocks = [np.round(idct2(b)).astype(np.uint8) for b in dequantized_blocks]
     img_rec = merge_blocks(idct_blocks, img_shape)
@@ -96,7 +106,12 @@ def jpeg_decompression(quantized_blocks, q_table, img_shape):
 # ---------------------------
 
 def process_image(img, q_table):
-    # --- Converte RGB -> YCbCr ---
+    """
+    Processa uma imagem RGB:
+    - Converte para YCbCr
+    - Aplica JPEG nos canais
+    - Calcula métricas de compressão (PSNR, SSIM, % de zeros, taxa de compressão)
+    """
     img_ycc = cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
     Y, Cb, Cr = cv2.split(img_ycc)
 
@@ -116,7 +131,7 @@ def process_image(img, q_table):
 
     # --- Canais de crominância (Cb, Cr) com subamostragem 4:2:0 ---
     def process_chroma(channel):
-        # reduz metade na horizontal e vertical
+        """Processa um canal de crominância com subamostragem 4:2:0."""
         small = cv2.resize(channel, (channel.shape[1] // 2, channel.shape[0] // 2))
         q_blocks = jpeg_compression(small, q_table)
         coefs = np.hstack([b.flatten() for b in q_blocks])
@@ -137,7 +152,7 @@ def process_image(img, q_table):
     img_recon_ycc = cv2.merge([rec_Y, rec_Cb, rec_Cr])
     img_final = cv2.cvtColor(img_recon_ycc.astype(np.uint8), cv2.COLOR_YCrCb2RGB)
 
-    # --- Medidas ---
+    # --- Medição de tamanho da imagem original ---
     with tempfile.NamedTemporaryFile(suffix=".bmp", delete=False) as tmp:
         Image.fromarray(img).save(tmp.name, format="BMP")
         tamanho_raw = os.path.getsize(tmp.name)
@@ -145,6 +160,7 @@ def process_image(img, q_table):
 
     tamanho_comp = total_bits / 8
 
+    # --- Cálculo de métricas ---
     psnr = peak_signal_noise_ratio(img, img_final, data_range=255)
     try:
         ssim = structural_similarity(img, img_final, channel_axis=2)
@@ -169,6 +185,13 @@ def process_image(img, q_table):
 # ---------------------------
 
 def main(pasta_imagens, quant_tables):
+    """
+    Loop principal:
+    - Lê imagens da pasta
+    - Redimensiona e converte para RGB
+    - Aplica compressão JPEG para cada tabela de quantização
+    - Armazena resultados em um DataFrame
+    """
     resultados = []
     arquivos = [f for f in os.listdir(pasta_imagens) if f.endswith(".tiff") or f.endswith(".JPEG")]
 
@@ -253,6 +276,7 @@ if __name__ == "__main__":
 
     metricas = ['PSNR', 'SSIM', '% de Zeros']
     plt.figure(figsize=(10, 6))
+
     for met in metricas:
         plt.figure(figsize=(8, 5))
         for nome_tab in tabelas.keys():
@@ -281,6 +305,3 @@ if __name__ == "__main__":
     sns.heatmap(corr, annot=True, cmap='coolwarm')
     plt.title("Matriz de Correlação das Métricas")
     plt.show()
-
-
-
