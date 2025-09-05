@@ -95,36 +95,59 @@ def jpeg_decompression(quantized_blocks, q_table, img_shape):
 # ---------------------------
 
 def process_image(img, q_table):
+    # --- Converte RGB -> YCbCr ---
+    img_ycc = cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
+    Y, Cb, Cr = cv2.split(img_ycc)
+
     canais_recon = []
     total_bits = 0
     coef_zerados = 0
     total_coef = 0
 
-    for c in range(3):  # RGB
-        canal = img[:, :, c]
-        quant_blocks = jpeg_compression(canal, q_table)
-        all_coefs = np.hstack([b.flatten() for b in quant_blocks])
-        coef_zerados += np.sum(all_coefs == 0)
-        total_coef += all_coefs.size
-        encoded_data, _ = huffman_encoding(all_coefs)
-        total_bits += len(encoded_data)
-        rec_canal = jpeg_decompression(quant_blocks, q_table, canal.shape)
-        canais_recon.append(rec_canal)
+    # --- Canal de luminância (Y) ---
+    quant_blocks = jpeg_compression(Y, q_table)
+    all_coefs = np.hstack([b.flatten() for b in quant_blocks])
+    coef_zerados += np.sum(all_coefs == 0)
+    total_coef += all_coefs.size
+    encoded_data, _ = huffman_encoding(all_coefs)
+    total_bits += len(encoded_data)
+    rec_Y = jpeg_decompression(quant_blocks, q_table, Y.shape)
 
-    img_final = cv2.merge(canais_recon)
+    # --- Canais de crominância (Cb, Cr) com subamostragem 4:2:0 ---
+    def process_chroma(channel):
+        # reduz metade na horizontal e vertical
+        small = cv2.resize(channel, (channel.shape[1] // 2, channel.shape[0] // 2))
+        q_blocks = jpeg_compression(small, q_table)
+        coefs = np.hstack([b.flatten() for b in q_blocks])
+        nonlocal coef_zerados, total_coef, total_bits
+        coef_zerados += np.sum(coefs == 0)
+        total_coef += coefs.size
+        encoded, _ = huffman_encoding(coefs)
+        total_bits += len(encoded)
+        rec_small = jpeg_decompression(q_blocks, q_table, small.shape)
+        # reexpande de volta pro tamanho original
+        rec_full = cv2.resize(rec_small, (channel.shape[1], channel.shape[0]))
+        return rec_full
 
-    # --- usa tempfile para medir o tamanho RAW ---
+    rec_Cb = process_chroma(Cb)
+    rec_Cr = process_chroma(Cr)
+
+    # --- Junta de volta Y, Cb, Cr ---
+    img_recon_ycc = cv2.merge([rec_Y, rec_Cb, rec_Cr])
+    img_final = cv2.cvtColor(img_recon_ycc.astype(np.uint8), cv2.COLOR_YCrCb2RGB)
+
+    # --- Medidas ---
     with tempfile.NamedTemporaryFile(suffix=".bmp", delete=False) as tmp:
         Image.fromarray(img).save(tmp.name, format="BMP")
         tamanho_raw = os.path.getsize(tmp.name)
-    os.remove(tmp.name)  # remove o arquivo temporário
+    os.remove(tmp.name)
 
-    tamanho_comp = total_bits / 8  # bits -> bytes
+    tamanho_comp = total_bits / 8
 
     psnr = peak_signal_noise_ratio(img, img_final, data_range=255)
     try:
         ssim = structural_similarity(img, img_final, channel_axis=2)
-    except TypeError:  # fallback para versões antigas
+    except TypeError:
         ssim = structural_similarity(img, img_final, multichannel=True)
 
     percentual_zerados = (coef_zerados / total_coef) * 100
@@ -138,6 +161,7 @@ def process_image(img, q_table):
         'Tamanho Original (bytes)': tamanho_raw,
         'Tamanho Comprimido (bytes)': tamanho_comp
     }
+
 
 # ---------------------------
 # Execução principal
@@ -214,7 +238,7 @@ if __name__ == "__main__":
     df = main(pasta, tabelas)
 
     # Geração de boxplots
-    metricas = ['PSNR', 'SSIM', '% Zeros', 'Taxa de Compressão (em x)']
+    metricas = ['PSNR', 'SSIM', '% de Zeros', 'Taxa de Compressão (em x)']
     for met in metricas:
         plt.figure(figsize=(8, 5))
         df.boxplot(column=met, by="Quantização")
