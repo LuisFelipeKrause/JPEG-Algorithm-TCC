@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from scipy.fftpack import dct, idct
+import seaborn as sns
 from PIL import Image
 
 # ---------------------------
@@ -156,7 +157,7 @@ def process_image(img, q_table):
     return {
         'PSNR': psnr,
         'SSIM': ssim,
-        '% Zeros': percentual_zerados,
+        '% de Zeros': percentual_zerados,
         'Taxa de Compressão (em x)': taxa_comp,
         'Tamanho Original (bytes)': tamanho_raw,
         'Tamanho Comprimido (bytes)': tamanho_comp
@@ -169,7 +170,7 @@ def process_image(img, q_table):
 
 def main(pasta_imagens, quant_tables):
     resultados = []
-    arquivos = [f for f in os.listdir(pasta_imagens) if f.endswith(".tiff")]
+    arquivos = [f for f in os.listdir(pasta_imagens) if f.endswith(".tiff") or f.endswith(".JPEG")]
 
     for arq in arquivos:
         caminho = os.path.join(pasta_imagens, arq)
@@ -186,7 +187,8 @@ def main(pasta_imagens, quant_tables):
             resultados.append(met)
 
     df = pd.DataFrame(resultados)
-    print(df)
+    print(df.head(15))
+    print(df.tail(15))
     return df
 
 # ---------------------------
@@ -234,7 +236,7 @@ if __name__ == "__main__":
         "Agressiva": agressivo
     }
 
-    pasta = "./img"  # coloque o caminho da pasta
+    pasta = "./img_testes_rapidos"  # coloque o caminho da pasta
     df = main(pasta, tabelas)
 
     # Geração de boxplots
@@ -248,3 +250,37 @@ if __name__ == "__main__":
         plt.ylabel(met)
         plt.grid(True)
         plt.show()
+
+    metricas = ['PSNR', 'SSIM', '% de Zeros']
+    plt.figure(figsize=(10, 6))
+    for met in metricas:
+        plt.figure(figsize=(8, 5))
+        for nome_tab in tabelas.keys():
+            df_tab = df[df['Quantização'] == nome_tab]
+            plt.scatter(df_tab['Taxa de Compressão (em x)'], 
+                        df_tab[met], 
+                        label=nome_tab, alpha=0.7)
+        plt.title(f"{met} x Taxa de Compressão")
+        plt.xlabel("Taxa de Compressão (em x)")
+        plt.ylabel(met)
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+
+    # gráfico de violino
+    metricas = ['PSNR', 'SSIM', '% de Zeros', 'Taxa de Compressão (em x)']
+    for met in metricas:
+        plt.figure(figsize=(8,5))
+        sns.violinplot(x='Quantização', y=met, data=df)
+        plt.title(f"Violin Plot - {met}")
+        plt.grid(True)
+        plt.show()
+
+    # heatmap
+    corr = df[['PSNR','SSIM','% de Zeros','Taxa de Compressão (em x)']].corr()
+    sns.heatmap(corr, annot=True, cmap='coolwarm')
+    plt.title("Matriz de Correlação das Métricas")
+    plt.show()
+
+
+
