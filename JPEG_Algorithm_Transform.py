@@ -19,13 +19,12 @@ arquivos = [os.path.join(pasta_img, f) for f in os.listdir(pasta_img)
             if f.lower().endswith(('.tiff', '.jpeg'))]
 
 img_comparativo = [
-    '1.1.11.tiff',
-    'texmos1.p512.tiff',
-    'n01614925_bald_eagle.JPEG',
+    '2.1.10.tiff',
+    'gray21.512.tiff',
     'n02066245_grey_whale.JPEG',
-    '4.2.03.tiff',
-    'gray21.512.tiff'
-]
+    'n02096051_Airedale.JPEG',
+    'n02085782_Japanese_spaniel.JPEG',
+    ]
 
 # ------------------------------
 # --- Matrizes / Transformadas -
@@ -278,27 +277,39 @@ for img_nome in img_comparativo:
     if subset.empty:
         print(f"{img_nome} não encontrado nos resultados (ou não existia no diretório).")
         continue
+
     original = subset.iloc[0]['Original']
-    plt.figure(figsize=(4*(len(transformadas)+1), 4))
-    plt.subplot(1, len(transformadas)+1, 1)
+    total_imgs = len(transformadas) + 1  # original + transformadas
+    cols = 3
+    rows = 2
+
+    plt.figure(figsize=(16, 10))
+
+    # Original (posição 1)
+    plt.subplot(rows, cols, 1)
     plt.imshow(original)
     plt.title('Original')
     plt.axis('off')
+
+    # Transformadas
     for i, t in enumerate(transformadas, start=2):
-        row = subset[subset['Transformada']==t]
+        row = subset[subset['Transformada'] == t]
+        plt.subplot(rows, cols, i)
         if row.empty:
-            plt.subplot(1, len(transformadas)+1, i)
-            plt.text(0.5,0.5,f"No data for {t}", horizontalalignment='center', verticalalignment='center')
+            plt.text(0.5, 0.5, f"No data for {t}",
+                     horizontalalignment='center',
+                     verticalalignment='center')
             plt.axis('off')
             continue
+
         img_rec = row.iloc[0]['Reconstruida']
         ps = row.iloc[0]['PSNR']
         ss = row.iloc[0]['SSIM']
-        plt.subplot(1, len(transformadas)+1, i)
         plt.imshow(img_rec)
-        plt.title(f"{t}\nPSNR={ps}, SSIM={ss}")
+        plt.title(f"{t}\nPSNR={ps:.2f}, SSIM={ss:.4f}")
         plt.axis('off')
-    plt.suptitle(f'Comparativo - {img_nome}')
+
+    plt.tight_layout()
     plt.show()
 
 # ---------------------------

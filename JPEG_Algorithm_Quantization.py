@@ -207,19 +207,21 @@ for arquivo in arquivos:
     # --- Plot Comparativo ---
     # ------------------------
     if os.path.basename(arquivo) in img_comparativo:
-        plt.figure(figsize=(16,5))
-        plt.subplot(1,4,1)
+        plt.figure(figsize=(10,10))
+
+        # Original (posição 1)
+        plt.subplot(2,2,1)
         plt.title("Original")
         plt.imshow(img_rgb)
         plt.axis("off")
-        
+
+        # Três compressões (posições 2,3,4)
         for i, nome in enumerate(['padrão','moderado','agressivo'], start=2):
-            plt.subplot(1,4,i)
-            plt.title(f"{nome}\nPSNR:{resultados[nome]['PSNR']} SSIM:{resultados[nome]['SSIM']}")
+            plt.subplot(2,2,i)
+            plt.title(f"{nome}\nPSNR:{resultados[nome]['PSNR']:.2f}  SSIM:{resultados[nome]['SSIM']:.4f}")
             plt.imshow(imgs_reconstruidas[nome])
             plt.axis("off")
-        
-        plt.suptitle(os.path.basename(arquivo))
+
         plt.tight_layout()
         plt.show()
 
@@ -227,7 +229,6 @@ for arquivo in arquivos:
 # --- DataFrame Final ---
 # -----------------------
 df = pd.DataFrame(resultados_gerais)
-print(df.to_string(index=False))
 
 # ---------------------------
 # --- BoxPlot por Métrica ---
