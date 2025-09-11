@@ -142,8 +142,32 @@ Para imagens selecionadas (`img_comparativo`), é exibida uma comparação:
 - Métricas de qualidade sobrepostas nos títulos das figuras
 
 ---
+# Saídas
 
-## 📈 Exemplo de Saída
+## 📈 Exemplo de Saída `JPEG_Algorithm_Quantization.py`
 
-### Plotagem
-<div style="text-align: center;"> <img src="./img/exemplo_resultado.png" alt="Resultado do Algoritmo"> </div>
+### Plotagem Comparativa
+<div style="text-align: center;"> <img src="./img/exemplo_imagens.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico BoxPlot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico1.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico Scatter
+<div style="text-align: center;"> <img src="./img/exemplo_grafico2.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico Violino
+<div style="text-align: center;"> <img src="./img/exemplo_grafico3.png" alt="Resultado do Algoritmo"> </div>
+
+## 📈 Exemplo de Saída `JPEG_Algorithm_Transform.py`
+
+### Plotagem Comparativa
+<div style="text-align: center;"> <img src="./img/exemplo_imagens1.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico BoxPlot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico11.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico Scatter
+<div style="text-align: center;"> <img src="./img/exemplo_grafico12.png" alt="Resultado do Algoritmo"> </div>
+
+### Plotagem Gráfico Violino
+<div style="text-align: center;"> <img src="./img/exemplo_grafico13.png" alt="Resultado do Algoritmo"> </div>
