@@ -86,18 +86,8 @@ As imagens utilizadas devem estar no diretório `./img/`. Durante a execução, 
 - As bases de imagens incluem:
   - **SIPI Image Database** ([link](http://sipi.usc.edu/database/))
   - **ImageNet Sample Images** ([link](http://www.image-net.org/))
-
----
-
-## 📋 Tabelas de Quantização
-
-Para o algoritmo JPEG (DCT), são utilizadas três tabelas diferentes para simular níveis de compressão:
-
-| Nome      | Descrição                          |
-|-----------|------------------------------------|
-| padrão    | Quantização leve (alta qualidade)  |
-| moderado  | Quantização intermediária          |
-| agressivo | Quantização forte (alta compressão)|
+    
+Sendo 210 imagens de cada base, somando 420 imagens testadas.
 
 ---
 
