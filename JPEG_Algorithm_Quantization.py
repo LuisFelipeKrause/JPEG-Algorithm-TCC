@@ -17,12 +17,11 @@ arquivos = [os.path.join(pasta_img, f) for f in os.listdir(pasta_img)
             if f.lower().endswith(('.tiff', '.jpeg'))]
 
 img_comparativo = [
-    '1.1.11.tiff', 
-    'texmos1.p512.tiff', 
-    'n01614925_bald_eagle.JPEG', 
-    'n02066245_grey_whale.JPEG', 
-    '4.2.03.tiff', 
-    'gray21.512.tiff'
+    '2.1.10.tiff',
+    'gray21.512.tiff',
+    'n02066245_grey_whale.JPEG',
+    'n02096051_Airedale.JPEG',
+    'n02085782_Japanese_spaniel.JPEG',
     ]
 
 # ------------------------------
