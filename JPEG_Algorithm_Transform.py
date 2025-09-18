@@ -23,7 +23,6 @@ img_comparativo = [
     'gray21.512.tiff',
     'n02066245_grey_whale.JPEG',
     'n02096051_Airedale.JPEG',
-    'n02085782_Japanese_spaniel.JPEG',
     ]
 
 # ------------------------------
@@ -269,6 +268,7 @@ for col in ['PSNR','SSIM','% Coef. Zerados','Taxa Compressão (x)']:
     if col in df_clean.columns:
         df_clean[col] = pd.to_numeric(df_clean[col], errors='coerce')
 
+
 # ---------------------------
 # --- Comparativo Imagens ----
 # ---------------------------
@@ -310,9 +310,12 @@ for img_nome in img_comparativo:
         plt.axis('off')
 
     plt.tight_layout()
-    # plt.show()
-    plt.savefig(f"./img_saida/Transform/Comparativo/{img_nome}.png", dpi=300, bbox_inches="tight")
+
+    # 🔑 Remove extensão antes de salvar
+    nome_sem_ext, _ = os.path.splitext(img_nome)
+    plt.savefig(f"./img_saida/Transform/Comparativo/{nome_sem_ext}.png", dpi=300, bbox_inches="tight")
     plt.close()
+
 
 # ---------------------------
 # --- BoxPlot por Métrica ---

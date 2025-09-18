@@ -21,7 +21,6 @@ img_comparativo = [
     'gray21.512.tiff',
     'n02066245_grey_whale.JPEG',
     'n02096051_Airedale.JPEG',
-    'n02085782_Japanese_spaniel.JPEG',
     ]
 
 # ------------------------------
