@@ -206,6 +206,8 @@ for arquivo in arquivos:
     # --- Plot Comparativo ---
     # ------------------------
     if os.path.basename(arquivo) in img_comparativo:
+        nome_img = os.path.basename(arquivo)
+
         plt.figure(figsize=(10,10))
 
         # Original (posição 1)
@@ -222,7 +224,10 @@ for arquivo in arquivos:
             plt.axis("off")
 
         plt.tight_layout()
-        plt.show()
+        # plt.show()
+        plt.savefig(f"./img_saida/Quantization/Comparativo/{nome_img}.png", dpi=300, bbox_inches="tight")
+        plt.close()
+
 
 # -----------------------
 # --- DataFrame Final ---
@@ -236,7 +241,10 @@ for metric in ['PSNR','SSIM','% Coef. Zerados','Taxa Compressão (x)']:
     plt.figure(figsize=(8,5))
     sns.boxplot(x='Tabela', y=metric, data=df)
     plt.title(f'Boxplot - {metric}')
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Quantization/BoxPlot_{metric}.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
 
 # ------------------------------------------
 # --- Scatter plot vs Taxa de Compressão ---
@@ -254,7 +262,9 @@ for met in metricas:
     plt.ylabel(met)
     plt.grid(True)
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Quantization/ScatterPlot_{met}.png", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # ---------------------------
 # --- Gráfico de violino ---
@@ -265,4 +275,6 @@ for met in metricas:
     sns.violinplot(x='Tabela', y=met, data=df)
     plt.title(f"Violin Plot - {met}")
     plt.grid(True)
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Quantization/ViolinPlot_{met}.png", dpi=300, bbox_inches="tight")
+    plt.close()

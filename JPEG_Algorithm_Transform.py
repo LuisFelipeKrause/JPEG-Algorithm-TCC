@@ -310,7 +310,9 @@ for img_nome in img_comparativo:
         plt.axis('off')
 
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Transform/Comparativo/{img_nome}.png", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # ---------------------------
 # --- BoxPlot por Métrica ---
@@ -327,7 +329,9 @@ for metric in metrics:
     plt.figure(figsize=(8,5))
     sns.boxplot(x='Transformada', y=metric, data=df_plot, order=order)
     plt.title(f'Boxplot - {metric}')
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Transform/BoxPlot_{metric}.png", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # ------------------------------------------
 # --- Scatter plot vs Taxa de Compressão ---
@@ -346,7 +350,9 @@ for met in ['PSNR','SSIM','% Coef. Zerados']:
     plt.ylabel(met)
     plt.grid(True)
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Transform/ScatterPlot_{met}.png", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # ---------------------------
 # --- Gráfico de violino ---
@@ -363,4 +369,6 @@ for met in metrics:
     sns.violinplot(x='Transformada', y=met, data=df_plot, order=order, inner='box')
     plt.title(f"Violin Plot - {met}")
     plt.grid(True)
-    plt.show()
+    # plt.show()
+    plt.savefig(f"./img_saida/Transform/ViolinPlot_{met}.png", dpi=300, bbox_inches="tight")
+    plt.close()
