@@ -12,7 +12,7 @@ import seaborn as sns
 # ------------------------
 # --- Pasta de imagens ---
 # ------------------------
-pasta_img = './img_testes_rapidos'
+pasta_img = './img'
 arquivos = [os.path.join(pasta_img, f) for f in os.listdir(pasta_img) 
             if f.lower().endswith(('.tiff', '.jpeg'))]
 

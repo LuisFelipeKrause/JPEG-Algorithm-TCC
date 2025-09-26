@@ -14,7 +14,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 # -----------------------------
 # --- Configurações / Pasta ---
 # -----------------------------
-pasta_img = './img_testes_rapidos'
+pasta_img = './img'
 arquivos = [os.path.join(pasta_img, f) for f in os.listdir(pasta_img)
             if f.lower().endswith(('.tiff', '.jpeg'))]
 
@@ -218,8 +218,14 @@ for arquivo in arquivos:
 
         original_uint8 = img_rgb.astype(np.uint8)
         reconstruida_uint8 = img_final.astype(np.uint8)
-        psnr_val = peak_signal_noise_ratio(original_uint8, reconstruida_uint8, data_range=255)
+        mse = np.mean((original_uint8.astype(np.float64) - reconstruida_uint8.astype(np.float64)) ** 2)
+        if mse == 0:
+            psnr_val = float('inf')
+        else:
+            psnr_val = 10 * np.log10((255 ** 2) / mse)
+
         ssim_val = structural_similarity(original_uint8, reconstruida_uint8, channel_axis=2, data_range=255)
+
 
         perc_zeros = (zY + zCb + zCr) / (cY + cCb + cCr) * 100
 
