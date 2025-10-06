@@ -223,7 +223,6 @@ for arquivo in arquivos:
             plt.axis("off")
 
         plt.tight_layout()
-        # plt.show()
         plt.savefig(f"./img_saida/Quantization/Comparativo/{nome_img}.png", dpi=300, bbox_inches="tight")
         plt.close()
 
@@ -236,13 +235,50 @@ df = pd.DataFrame(resultados_gerais)
 # ---------------------------
 # --- BoxPlot por Métrica ---
 # ---------------------------
-for metric in ['PSNR','SSIM','% Coef. Zerados','Taxa Compressão (x)']:
-    plt.figure(figsize=(8,5))
-    sns.boxplot(x='Tabela', y=metric, data=df)
-    plt.title(f'Boxplot - {metric}')
-    # plt.show()
+# ---------------------------
+# --- BoxPlot por Métrica ---
+# ---------------------------
+# ---------------------------
+# --- BoxPlot por Métrica ---
+# ---------------------------
+for metric in ['PSNR', 'SSIM', '% Coef. Zerados', 'Taxa Compressão (x)']:
+    plt.figure(figsize=(8, 5))
+
+    # Boxplot preto e branco, sem preenchimento de cor
+    sns.boxplot(
+        x='Tabela',
+        y=metric,
+        data=df,
+        color='white',
+        showcaps=True,
+        linewidth=1.5,
+        boxprops={'edgecolor': 'black'},
+        medianprops={'color': 'black'},
+        whiskerprops={'color': 'black'},
+        capprops={'color': 'black'},
+        flierprops={'marker': 'o', 'markerfacecolor': 'none', 'markeredgecolor': 'black'}
+    )
+
+    # Adiciona TODAS as ocorrências (não apenas outliers)
+    # Bolinhas vazias (facecolors='none') e contorno preto (edgecolors='black')
+    # Sem dispersão horizontal (jitter=0)
+    tabelas_map = {'padrão': 0, 'moderado': 1, 'agressivo': 2}
+    plt.scatter(
+        x=[tabelas_map[t] for t in df['Tabela']],
+        y=df[metric],
+        facecolors='none',
+        edgecolors='black',
+        s=40,
+        linewidths=0.8
+    )
+
+    plt.title(f'Boxplot - {metric}', fontsize=12)
+    plt.xlabel('Tabela', fontsize=11)
+    plt.ylabel(metric, fontsize=11)
+    plt.tight_layout()
     plt.savefig(f"./img_saida/Quantization/BoxPlot_{metric}.png", dpi=300, bbox_inches="tight")
     plt.close()
+
 
 
 # ------------------------------------------
@@ -261,19 +297,5 @@ for met in metricas:
     plt.ylabel(met)
     plt.grid(True)
     plt.legend()
-    # plt.show()
     plt.savefig(f"./img_saida/Quantization/ScatterPlot_{met}.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-# ---------------------------
-# --- Gráfico de violino ---
-# ---------------------------
-metricas = ['PSNR', 'SSIM', '% Coef. Zerados', 'Taxa Compressão (x)']
-for met in metricas:
-    plt.figure(figsize=(8,5))
-    sns.violinplot(x='Tabela', y=met, data=df)
-    plt.title(f"Violin Plot - {met}")
-    plt.grid(True)
-    # plt.show()
-    plt.savefig(f"./img_saida/Quantization/ViolinPlot_{met}.png", dpi=300, bbox_inches="tight")
     plt.close()

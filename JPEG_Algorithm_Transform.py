@@ -326,21 +326,58 @@ for img_nome in img_comparativo:
 # ---------------------------
 # --- BoxPlot por Métrica ---
 # ---------------------------
-metrics = ['PSNR','SSIM','% Coef. Zerados','Taxa Compressão (x)']
+# ---------------------------
+# --- BoxPlot por Métrica ---
+# ---------------------------
+metrics = ['PSNR', 'SSIM', '% Coef. Zerados', 'Taxa Compressão (x)']
+
 for metric in metrics:
     if metric not in df_clean.columns:
         continue
+
     df_plot = df_clean[['Transformada', metric]].dropna()
-    order = [t for t in transformadas if not df_plot[df_plot['Transformada']==t].empty]
+    order = [t for t in transformadas if not df_plot[df_plot['Transformada'] == t].empty]
+
     if df_plot.empty or len(order) == 0:
         print(f"Sem dados válidos para boxplot de {metric}. Pulando.")
         continue
-    plt.figure(figsize=(8,5))
-    sns.boxplot(x='Transformada', y=metric, data=df_plot, order=order)
-    plt.title(f'Boxplot - {metric}')
-    # plt.show()
-    plt.savefig(f"./img_saida/Transform/BoxPlot_{metric}.png", dpi=300, bbox_inches="tight")
+
+    plt.figure(figsize=(8, 5))
+
+    # Boxplot em preto e branco
+    sns.boxplot(
+        x='Transformada',
+        y=metric,
+        data=df_plot,
+        order=order,
+        color='white',
+        showcaps=True,
+        linewidth=1.5,
+        boxprops={'edgecolor': 'black'},
+        medianprops={'color': 'black'},
+        whiskerprops={'color': 'black'},
+        capprops={'color': 'black'},
+        flierprops={'marker': 'o', 'markerfacecolor': 'none', 'markeredgecolor': 'black'}
+    )
+
+    # Adiciona todas as ocorrências (pontos vazios)
+    transform_map = {t: i for i, t in enumerate(order)}
+    plt.scatter(
+        x=[transform_map[t] for t in df_plot['Transformada']],
+        y=df_plot[metric],
+        facecolors='none',
+        edgecolors='black',
+        s=40,
+        linewidths=0.8
+    )
+
+    plt.title(f'Boxplot - {metric}', fontsize=12)
+    plt.xlabel('Transformada', fontsize=11)
+    plt.ylabel(metric, fontsize=11)
+    plt.tight_layout()
+    plt.savefig(f"./img_saida/Transform/BoxPlot_{metric}.png", dpi=300, bbox_inches='tight')
     plt.close()
+
 
 # ------------------------------------------
 # --- Scatter plot vs Taxa de Compressão ---
@@ -361,23 +398,4 @@ for met in ['PSNR','SSIM','% Coef. Zerados']:
     plt.legend()
     # plt.show()
     plt.savefig(f"./img_saida/Transform/ScatterPlot_{met}.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-# ---------------------------
-# --- Gráfico de violino ---
-# ---------------------------
-for met in metrics:
-    if met not in df_clean.columns:
-        continue
-    df_plot = df_clean[['Transformada', met]].dropna()
-    order = [t for t in transformadas if not df_plot[df_plot['Transformada']==t].empty]
-    if df_plot.empty or len(order)==0:
-        print(f"Sem dados válidos para violin plot de {met}. Pulando.")
-        continue
-    plt.figure(figsize=(8,5))
-    sns.violinplot(x='Transformada', y=met, data=df_plot, order=order, inner='box')
-    plt.title(f"Violin Plot - {met}")
-    plt.grid(True)
-    # plt.show()
-    plt.savefig(f"./img_saida/Transform/ViolinPlot_{met}.png", dpi=300, bbox_inches="tight")
     plt.close()
