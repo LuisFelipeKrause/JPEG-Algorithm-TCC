@@ -1,163 +1,165 @@
 ## Luís Felipe Krause de Castro
 
-# 📦 Compressão de Imagens: JPEG e Transformadas
+# 📦 Image Compression: JPEG and Transforms
 
-Este projeto implementa dois algoritmos de compressão baseados no JPEG:
+This project implements two image compression algorithms based on the JPEG standard:
 
-1. O arquivo `JPEG_Algorithm_Quantization.py` executa o algoritmo JPEG utilizando três matrizes de quantização diferentes:
+1. The file `JPEG_Algorithm_Quantization.py` runs the JPEG algorithm using three different quantization matrices:
 
-   - **padrão**: matriz utilizada no JPEG padrão.
-   - **moderado**: compressão intermediária.
-   - **agressivo**: compressão forte, maior redução de tamanho.
+   - **standard**: matrix used in the baseline JPEG.
+   - **moderate**: intermediate compression.
+   - **aggressive**: strong compression, with greater size reduction.
 
-   Para cada imagem, o script:
+   For each image, the script:
 
-   - Divide a imagem em **blocos 8x8**.
-   - Aplica **DCT (Discrete Cosine Transform)** nos blocos.
-   - Quantiza os coeficientes com a tabela selecionada.
-   - Reconstrói a imagem com **IDCT**.
-   - Calcula métricas de qualidade e compressão:
-     - **PSNR** (Peak Signal-to-Noise Ratio)
-     - **SSIM** (Structural Similarity Index)
-     - **% de coeficientes zerados**
-     - **Tamanho original e comprimido**
-     - **Taxa de compressão**
-   - Exibe **visualizações comparativas** entre original e imagens reconstruídas.
+   - Splits the image into **8x8 blocks**.  
+   - Applies the **DCT (Discrete Cosine Transform)** to each block.  
+   - Quantizes the coefficients using the selected quantization table.  
+   - Reconstructs the image using **IDCT**.  
+   - Computes quality and compression metrics:
+     - **PSNR** (Peak Signal-to-Noise Ratio)  
+     - **SSIM** (Structural Similarity Index)  
+     - **% of zeroed coefficients**  
+     - **Original and compressed size**  
+     - **Compression ratio**  
+   - Displays **comparative visualizations** between the original and reconstructed images.
 
-2. O arquivo `JPEG_Algorithm_Transform.py` realiza compressão utilizando outras transformadas além da DCT, permitindo testar:
+2. The file `JPEG_Algorithm_Transform.py` performs compression using alternative transforms beyond DCT, allowing tests with:
 
    - **Fourier**
    - **Laplace**
    - **Wavelet**
 
-   Para cada transformada, o script:
+   For each transform, the script:
 
-   - Processa a imagem em blocos.
-   - Aplica **quantização**.
-   - Reconstrói a imagem.
-   - Calcula as mesmas métricas de qualidade e compressão do JPEG.
-   - Gera comparativos gráficos entre original e imagens reconstruídas.
+   - Processes the image in blocks.  
+   - Applies **quantization**.  
+   - Reconstructs the image.  
+   - Computes the same quality and compression metrics as JPEG.  
+   - Generates comparative plots between the original and reconstructed images.
 
-## ✨ Visão Geral
+---
 
-O fluxo de processamento inclui:
+## ✨ Overview
 
-1. **Aplicação de transformadas**  
-   - Pode ser **DCT**, **Fourier**, **Laplace** ou **Wavelet (Haar)**.  
-   - Executado em **blocos 8x8**.
+The processing flow includes:
 
-2. **Quantização dos coeficientes**  
-   - Para JPEG, são usadas três matrizes de quantização: **padrão**, **moderado** e **agressivo**.
+1. **Application of transforms**  
+   - Can be **DCT**, **Fourier**, **Laplace**, or **Wavelet (Haar)**.  
+   - Executed on **8x8 blocks**.
 
-3. **Reconstrução da imagem**  
-   - A imagem é reconstruída a partir dos coeficientes transformados, usando **IDCT**, **iFFT**, ou **IDWT**, dependendo da transformada utilizada na compressão.
+2. **Coefficient quantization**  
+   - For JPEG, three quantization matrices are used: **standard**, **moderate**, and **aggressive**.
 
-4. **Compressão com Huffman**  
-   - Os coeficientes quantizados são codificados com **Huffman** para estimar o tamanho comprimido em bytes.
+3. **Image reconstruction**  
+   - The image is reconstructed from the transformed coefficients using **IDCT**, **iFFT**, or **IDWT**, depending on the transform used.
 
-5. **Cálculo de métricas de qualidade e compressão**  
+4. **Huffman compression**  
+   - The quantized coefficients are encoded using **Huffman coding** to estimate the compressed file size.
+
+5. **Quality and compression metrics**  
    - **PSNR (Peak Signal-to-Noise Ratio)**  
    - **SSIM (Structural Similarity Index)**  
-   - **% de coeficientes zerados**  
-   - **Taxa de compressão (original/comprimido)**
+   - **% of zeroed coefficients**  
+   - **Compression ratio (original/compressed)**
 
-6. **Visualização dos resultados**  
-   - Comparativos gráficos entre **original** e imagens reconstruídas.  
-   - Boxplots, scatter plots e violin plots para análise estatística das métricas.
-
-
-## 🧰 Tecnologias Utilizadas
-
-- **Python 3** – Linguagem principal para implementação do algoritmo e scripts de análise.  
-- **NumPy** – Operações matriciais, manipulação de arrays e cálculos numéricos.  
-- **OpenCV** – Leitura, escrita, redimensionamento e conversão de cores das imagens.  
-- **Matplotlib** – Visualização das imagens e criação de gráficos comparativos.  
-- **SciPy** – Implementação de DCT/IDCT e transformadas de Fourier.  
-- **PyWavelets** – Transformadas Wavelet (Haar) para compressão full-frame.  
-- **Scikit-Image** – Cálculo de métricas de qualidade de imagem como PSNR e SSIM.  
-- **Pandas** – Armazenamento e manipulação de resultados em DataFrames para análise.  
-- **Seaborn** – Criação de gráficos estatísticos, como boxplots e violin plots, de forma estética.
-
-
-## 🖼️ Conjunto de Imagens
-
-As imagens utilizadas devem estar no diretório `./img/`. Durante a execução, cada imagem é automaticamente redimensionada para `512x512`.
-
-- As bases de imagens incluem:
-  - **SIPI Image Database** ([link](http://sipi.usc.edu/database/))
-  - **ImageNet Sample Images** ([link](http://www.image-net.org/))
-    
-Sendo 210 imagens de cada base, somando 420 imagens testadas.
+6. **Results visualization**  
+   - Comparative plots between **original** and reconstructed images.  
+   - Boxplots, scatter plots, and violin plots for statistical analysis.
 
 ---
 
-## ⚙️ Como Funciona o Algoritmo
+## 🧰 Technologies Used
 
-### 1. 🔁 Processamento em Lote
-
-O script percorre automaticamente todas as imagens da pasta `./img/` e aplica as transformadas ou tabelas de quantização configuradas.
-
-### 2. 📥 Compressão e Reconstrução
-
-Para cada imagem:
-
-- É dividida em **blocos 8x8**
-- É aplicada a transformada escolhida
-- Coeficientes são **quantizados**
-- A imagem é **reconstruída** para avaliação da qualidade
-
-### 3. 🧪 Cálculo de Métricas
-
-Após a reconstrução, são calculadas:
-
-- **PSNR** (Peak Signal-to-Noise Ratio)
-- **SSIM** (Structural Similarity Index)
-- **% de coeficientes zerados** após quantização
-- **Tamanho original vs. comprimido** (Huffman)
-- **Taxa de compressão**
-
-### 4. 📦 Compressão com Huffman
-
-- Os coeficientes quantizados são concatenados
-- Gerada a **árvore de Huffman**
-- Estimado o **tamanho comprimido em bytes**
-- Calculada a **taxa de compressão (original/comprimido)**
-
-### 5. 🖼️ Visualização
-
-Para imagens selecionadas (`img_comparativo`), é exibida uma comparação:
-
-- Original
-- Reconstruída com cada tabela ou transformada
-- Métricas de qualidade sobrepostas nos títulos das figuras
+- **Python 3** – Main language for algorithm implementation and analysis scripts.  
+- **NumPy** – Matrix operations, array manipulation, and numerical computation.  
+- **OpenCV** – Image reading, writing, resizing, and color conversion.  
+- **Matplotlib** – Visualization of images and comparative plots.  
+- **SciPy** – Implementation of DCT/IDCT and Fourier transforms.  
+- **PyWavelets** – Wavelet (Haar) transforms for full-frame compression.  
+- **Scikit-Image** – Computation of image quality metrics such as PSNR and SSIM.  
+- **Pandas** – Storage and manipulation of results in DataFrames for analysis.  
+- **Seaborn** – Generation of aesthetic statistical plots (boxplot, violin, scatter).
 
 ---
-# Saídas
 
-## 📈 Exemplo de Saída `JPEG_Algorithm_Quantization.py`
+## 🖼️ Image Dataset
 
-### Plotagem Comparativa
-<div style="text-align: center;"> <img src="./img/exemplo_imagens.png" alt="Resultado do Algoritmo"> </div>
+Images must be placed in the `./img/` directory.  
+During execution, each image is automatically resized to `512x512`.
 
-### Plotagem Gráfico BoxPlot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico1.png" alt="Resultado do Algoritmo"> </div>
+- Image datasets include:
+  - **SIPI Image Database** ([link](http://sipi.usc.edu/database/))  
+  - **ImageNet Sample Images** ([link](http://www.image-net.org/))  
 
-### Plotagem Gráfico Scatter
-<div style="text-align: center;"> <img src="./img/exemplo_grafico2.png" alt="Resultado do Algoritmo"> </div>
+There are 210 images from each dataset, totaling 420 images tested.
 
-### Plotagem Gráfico Violino
-<div style="text-align: center;"> <img src="./img/exemplo_grafico3.png" alt="Resultado do Algoritmo"> </div>
+---
 
-## 📈 Exemplo de Saída `JPEG_Algorithm_Transform.py`
+## ⚙️ How the Algorithm Works
 
-### Plotagem Comparativa
-<div style="text-align: center;"> <img src="./img/exemplo_imagens1.png" alt="Resultado do Algoritmo"> </div>
+### 1. 🔁 Batch Processing
 
-### Plotagem Gráfico BoxPlot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico11.png" alt="Resultado do Algoritmo"> </div>
+The script automatically iterates through all images in the `./img/` folder and applies the configured transforms or quantization tables.
 
-### Plotagem Gráfico Scatter
-<div style="text-align: center;"> <img src="./img/exemplo_grafico12.png" alt="Resultado do Algoritmo"> </div>
+### 2. 📥 Compression and Reconstruction
 
-### Plotagem Gráfico Violino
-<div style="text-align: center;"> <img src="./img/exemplo_grafico13.png" alt="Resultado do Algoritmo"> </div>
+For each image:
+
+- It is divided into **8x8 blocks**.  
+- The chosen transform is applied.  
+- Coefficients are **quantized**.  
+- The image is **reconstructed** for quality evaluation.
+
+### 3. 🧪 Metric Calculation
+
+After reconstruction, the following are computed:
+
+- **PSNR** (Peak Signal-to-Noise Ratio)  
+- **SSIM** (Structural Similarity Index)  
+- **% of zeroed coefficients** after quantization  
+- **Original vs. compressed size** (via Huffman encoding)  
+- **Compression ratio**
+
+### 4. 📦 Huffman Compression
+
+- Quantized coefficients are concatenated.  
+- A **Huffman tree** is generated.  
+- The **compressed size (in bytes)** is estimated.  
+- The **compression ratio (original/compressed)** is computed.
+
+### 5. 🖼️ Visualization
+
+For selected images (`img_comparativo`), the script displays comparisons between:
+
+- Original image  
+- Reconstructed images for each quantization table or transform  
+- Quality metrics shown in figure titles
+
+---
+
+# 📊 Outputs
+
+## 📈 Example Output from `JPEG_Algorithm_Quantization.py`
+
+### Comparative Plot
+<div style="text-align: center;"> <img src="./img/exemplo_imagens.png" alt="Algorithm Result"> </div>
+
+### BoxPlot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico1.png" alt="Algorithm Result"> </div>
+
+### Scatter Plot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico2.png" alt="Algorithm Result"> </div>
+
+---
+
+## 📈 Example Output from `JPEG_Algorithm_Transform.py`
+
+### Comparative Plot
+<div style="text-align: center;"> <img src="./img/exemplo_imagens1.png" alt="Algorithm Result"> </div>
+
+### BoxPlot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico11.png" alt="Algorithm Result"> </div>
+
+### Scatter Plot
+<div style="text-align: center;"> <img src="./img/exemplo_grafico12.png" alt="Algorithm Result"> </div>
