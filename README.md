@@ -143,23 +143,23 @@ For selected images (`img_comparativo`), the script displays comparisons between
 ## 📈 Example Output from `JPEG_Algorithm_Quantization.py`
 
 ### Comparative Plot
-<div style="text-align: center;"> <img src="./img/exemplo_imagens.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Quantization/Comparison/n02066245_grey_whale.JPEG.png" alt="Algorithm Result"> </div>
 
 ### BoxPlot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico1.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Quantization/BoxPlot_PSNR.png" alt="Algorithm Result"> </div>
 
 ### Scatter Plot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico2.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Quantization/ScatterPlot_SSIM.png" alt="Algorithm Result"> </div>
 
 ---
 
 ## 📈 Example Output from `JPEG_Algorithm_Transform.py`
 
 ### Comparative Plot
-<div style="text-align: center;"> <img src="./img/exemplo_imagens1.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Transform/Comparison/n02066245_grey_whale.png" alt="Algorithm Result"> </div>
 
 ### BoxPlot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico11.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Transform/BoxPlot_PSNR.png" alt="Algorithm Result"> </div>
 
 ### Scatter Plot
-<div style="text-align: center;"> <img src="./img/exemplo_grafico12.png" alt="Algorithm Result"> </div>
+<div style="text-align: center;"> <img src="./img_output/Transform/ScatterPlot_SSIM.png" alt="Algorithm Result"> </div>
